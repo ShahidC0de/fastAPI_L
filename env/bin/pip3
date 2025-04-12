@@ -1,0 +1,8 @@
+#!/media/shahid/b2028a90-3bac-46c1-b16d-42dac9e8974b/fastAPI/env/bin/python3
+# -*- coding: utf-8 -*-
+import re
+import sys
+from pip._internal.cli.main import main
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+    sys.exit(main())
