@@ -70,7 +70,21 @@ async def postItem(item: Item):
         price_with_tax = item.price + item.tax
         item_dict.update({"price_with_tax": price_with_tax})
     return item_dict
+from fastapi import Query
+from typing import Annotated
+@app.get('/annotated/')
+# > becomes %3E
 
+  #  $ becomes %24
+async def annotatedExample(q: Annotated[str | None, Query(min_length=10,max_length=50)]= None):
+    result = {"item": [{"item_id:" "Foo"}, {"item_id": "Bar"}]}
+    if q and q.startswith("hi") and q.endswith("$"):
+        result.update({"q": q})
+    return result
+@app.get('/list/')
+async def recieveList(q: Annotated[list[str] |None, Query(title="Query String",min_length=1,deprecated=True)] = {"foo","bar"}):
+    q_items = {"item": q}
+    return q_items
 
     
 
