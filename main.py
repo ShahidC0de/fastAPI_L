@@ -70,7 +70,7 @@ async def postItem(item: Item):
         price_with_tax = item.price + item.tax
         item_dict.update({"price_with_tax": price_with_tax})
     return item_dict
-from fastapi import Query
+from fastapi import Query,Path
 from typing import Annotated
 @app.get('/annotated/')
 # > becomes %3E
@@ -85,6 +85,20 @@ async def annotatedExample(q: Annotated[str | None, Query(min_length=10,max_leng
 async def recieveList(q: Annotated[list[str] |None, Query(title="Query String",min_length=1,deprecated=True)] = {"foo","bar"}):
     q_items = {"item": q}
     return q_items
+# PATH PARAMETER AND NUMERIC VALIDATION
+@app.get('/usingpath/{item_id}')
+async def usePath(item_id: Annotated[str|None, Path(title='this example is path parameter')],q:Annotated[str | None,Query(alias='query-parameter')]= None):
+    result = {"item_id": item_id}
+    if q:
+        result.update({"q":q})
+    return result
+@app.get('/ensuring/{item_id}')
+async def esure(q: str, item_id: Annotated[int, Path(title= 'the id of item to get')]):
+    result = {"item_id": item_id}
+    if q:
+        result.update({"q":q})
+    return result
+    
 
     
 
