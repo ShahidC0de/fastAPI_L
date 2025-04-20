@@ -57,7 +57,7 @@ async def readItem(item_id: str, q: Optional[str]= None, short: bool = False):
     if not short:
         item_id.update({"description": "this is an amazing item."})
     return item_id
-from pydantic import BaseModel
+from pydantic import BaseModel,Field
 class Item(BaseModel):
     name: str
     description: Optional[str]= None
@@ -71,7 +71,7 @@ async def postItem(item: Item):
         item_dict.update({"price_with_tax": price_with_tax})
     return item_dict
 from fastapi import Query,Path
-from typing import Annotated
+from typing import Annotated, Literal
 @app.get('/annotated/')
 # > becomes %3E
 
@@ -98,6 +98,35 @@ async def esure(q: str, item_id: Annotated[int, Path(title= 'the id of item to g
     if q:
         result.update({"q":q})
     return result
+class FilterParams(BaseModel):
+    limit: int = Field(100,gt=0, le=100)
+    off_set: int = Field(0,ge=0)
+    orderby: Literal["created_at","updated_at"] = "created_at"
+    tags: list[str] =[]
+@app.get('/testingLiterals/')
+async def readTheModel(filter_quality: Annotated[FilterParams,Query()]):
+    return filter_quality
+class Item(BaseModel):
+    name: str
+    description: str | None = None
+    price: float | None = None
+    tax: float| None = None
+@app.put("/items/{item_id}")
+async def updatingItem(item_id: Annotated[int, Path(title='place the item id to get the item', le=1000, ge=0)],
+                       q: str| None = None,
+                       khan: Item | None = None,
+                       ):
+    result = {"item_id": item_id}
+    if q:
+        result.update({"q": q})
+    if khan:
+        result.update({"item": khan})
+    return result
+
+    
+
+
+
     
 
     
